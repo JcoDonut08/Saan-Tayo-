@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-10T10:20:52Z",
+  "title": "Design System: Saan Tayo?",
+  "extensions": {
+    "motionMeta": {
+      "welcome-brand-entry": {
+        "displayName": "Welcome Brand Entry",
+        "duration": "2320ms from route focus until brand completion, then 240ms action reveal",
+        "reducedMotion": "180ms opacity-only fade",
+        "sequence": "After a 200ms focus delay, the original brush lettering writes on through SVG masks, the GPS pin settles and signals, the question mark writes itself, the complete source mark replaces the animated layers, and only then do the actions reveal."
+      }
+    },
+    "colorMeta": {
+      "night-black": {
+        "role": "neutral",
+        "displayName": "Night Black",
+        "tonalRamp": [
+          "oklch(15% 0.006 218)",
+          "oklch(25% 0.006 218)",
+          "oklch(36% 0.006 218)",
+          "oklch(48% 0.006 218)",
+          "oklch(61% 0.006 218)",
+          "oklch(73% 0.006 218)",
+          "oklch(85% 0.006 218)",
+          "oklch(95% 0.006 218)"
+        ]
+      },
+      "warm-lettering": {
+        "role": "neutral",
+        "displayName": "Warm Lettering",
+        "tonalRamp": [
+          "oklch(15% 0.008 93)",
+          "oklch(27% 0.008 93)",
+          "oklch(39% 0.008 93)",
+          "oklch(51% 0.008 93)",
+          "oklch(63% 0.008 93)",
+          "oklch(75% 0.008 93)",
+          "oklch(87% 0.008 93)",
+          "oklch(97% 0.008 93)"
+        ]
+      },
+      "location-yellow": {
+        "role": "primary",
+        "displayName": "Location Yellow",
+        "tonalRamp": [
+          "oklch(15% 0.17 84)",
+          "oklch(26% 0.17 84)",
+          "oklch(38% 0.17 84)",
+          "oklch(50% 0.17 84)",
+          "oklch(62% 0.17 84)",
+          "oklch(74% 0.17 84)",
+          "oklch(86% 0.17 84)",
+          "oklch(95% 0.17 84)"
+        ]
+      },
+      "location-yellow-pressed": {
+        "role": "primary",
+        "displayName": "Pressed Location Yellow",
+        "tonalRamp": [
+          "oklch(15% 0.16 80)",
+          "oklch(26% 0.16 80)",
+          "oklch(38% 0.16 80)",
+          "oklch(50% 0.16 80)",
+          "oklch(62% 0.16 80)",
+          "oklch(74% 0.16 80)",
+          "oklch(86% 0.16 80)",
+          "oklch(95% 0.16 80)"
+        ]
+      },
+      "yellow-action-ink": {
+        "role": "neutral",
+        "displayName": "Yellow Action Ink",
+        "tonalRamp": [
+          "oklch(15% 0.006 225)",
+          "oklch(25% 0.006 225)",
+          "oklch(36% 0.006 225)",
+          "oklch(48% 0.006 225)",
+          "oklch(61% 0.006 225)",
+          "oklch(73% 0.006 225)",
+          "oklch(85% 0.006 225)",
+          "oklch(95% 0.006 225)"
+        ]
+      },
+      "yellow-outline": {
+        "role": "primary",
+        "displayName": "Yellow Outline",
+        "tonalRamp": [
+          "oklch(15% 0.17 84 / 0.58)",
+          "oklch(26% 0.17 84 / 0.58)",
+          "oklch(38% 0.17 84 / 0.58)",
+          "oklch(50% 0.17 84 / 0.58)",
+          "oklch(62% 0.17 84 / 0.58)",
+          "oklch(74% 0.17 84 / 0.58)",
+          "oklch(86% 0.17 84 / 0.58)",
+          "oklch(95% 0.17 84 / 0.58)"
+        ]
+      },
+      "yellow-outline-pressed": {
+        "role": "primary",
+        "displayName": "Pressed Yellow Outline",
+        "tonalRamp": [
+          "oklch(15% 0.17 84 / 0.82)",
+          "oklch(26% 0.17 84 / 0.82)",
+          "oklch(38% 0.17 84 / 0.82)",
+          "oklch(50% 0.17 84 / 0.82)",
+          "oklch(62% 0.17 84 / 0.82)",
+          "oklch(74% 0.17 84 / 0.82)",
+          "oklch(86% 0.17 84 / 0.82)",
+          "oklch(95% 0.17 84 / 0.82)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "action-label": {
+        "displayName": "Action Label",
+        "purpose": "Bold centered text for the two welcome actions; the native system face is inherited by omission."
+      }
+    }
+  },
+  "components": [
+    {
+      "name": "Welcome Primary Action",
+      "kind": "button",
+      "refersTo": "welcome-action-primary",
+      "description": "The filled Get Started capsule; the panel's hover and active states reproduce the shipped Pressable state color.",
+      "html": "<button class=\"ds-welcome-action ds-welcome-action-primary\">Get Started</button>",
+      "css": ".ds-welcome-action { width: 100%; max-width: 360px; min-height: 52px; padding: 14px 24px; border-radius: 999px; font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif; font-size: 15px; font-weight: 700; line-height: 20px; letter-spacing: 0.1px; text-align: center; cursor: pointer; overflow: hidden; } .ds-welcome-action-primary { background: #FFC21C; color: #101213; border: 0; } .ds-welcome-action-primary:hover, .ds-welcome-action-primary:active { background: #E6A900; } .ds-welcome-action-primary:focus-visible { outline: auto; outline-offset: 3px; }"
+    },
+    {
+      "name": "Welcome Secondary Action",
+      "kind": "button",
+      "refersTo": "welcome-action-secondary",
+      "description": "The outlined Log In capsule; the panel's hover and active states reproduce the shipped Pressable fill and outline colors.",
+      "html": "<button class=\"ds-welcome-action ds-welcome-action-secondary\">Log In</button>",
+      "css": ".ds-welcome-action { width: 100%; max-width: 360px; min-height: 52px; padding: 14px 24px; border-radius: 999px; font-family: system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif; font-size: 15px; font-weight: 700; line-height: 20px; letter-spacing: 0.1px; text-align: center; cursor: pointer; overflow: hidden; } .ds-welcome-action-secondary { background: rgba(8, 11, 12, 0.64); color: #F7F6F1; border: 1.5px solid rgba(255, 194, 28, 0.58); } .ds-welcome-action-secondary:hover, .ds-welcome-action-secondary:active { background: rgba(255, 194, 28, 0.08); border-color: rgba(255, 194, 28, 0.82); } .ds-welcome-action-secondary:focus-visible { outline: auto; outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Barkada Night Map",
+    "overview": "The established Saan Tayo? world is a portrait welcome surface: a near-black illustrated field, warm white hand-lettering, and a single location-yellow accent turn the familiar barkada question into an immediate invitation. It feels friendly and local without presenting unverified venues, maps, or product claims.\n\nThe world is intentionally narrow. Only the welcome surface is visually implemented; onboarding, discovery, saved places, groups, profile, results, place details, and rooms remain empty route scaffolds. Future work may extend these visual ingredients deliberately, but this document does not imply that navigation, cards, inputs, lists, or content screens already have an established design.",
+    "keyCharacteristics": [
+      "Near-black, edge-to-edge atmosphere with a faint food-and-hangout doodle field.",
+      "Warm white raster lettering with an integrated yellow location-pin accent.",
+      "One authored opening beat: the original brush lettering writes on, the pin acquires location, and the question mark writes itself last.",
+      "One filled yellow action and one quiet outlined action, both full-width capsules.",
+      "Safe-area-aware, scroll-safe portrait composition that remains usable at larger text sizes."
+    ],
+    "rules": [
+      {
+        "name": "The One Yellow Rule",
+        "body": "Location Yellow carries the pin and the two action treatments; it is the sole accent in the established world.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mark Is an Asset Rule",
+        "body": "Use the supplied logo asset for the Saan Tayo? lockup; do not approximate its lettering, punctuation, or integrated pin with a display font.",
+        "section": "typography"
+      },
+      {
+        "name": "The One-Question Motion Rule",
+        "body": "Animate the welcome mark once on arrival: words first, location pin second, question mark last, actions only after completion. Never loop it or scatter the same entrance across other controls.",
+        "section": "motion"
+      },
+      {
+        "name": "The Flat Night Rule",
+        "body": "Keep this world shadowless; separate action from atmosphere with contrast, outline, and state color rather than floating surfaces.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use the supplied logo and pattern assets together when reproducing this welcome world.",
+      "Do keep yellow rare and functional: the integrated pin, primary action, secondary outline, and their pressed states.",
+      "Do preserve safe-area clearance, scroll fallback, and at least the shipped 52-pixel action height.",
+      "Do keep the writing-to-GPS-to-question sequence one-shot and UI-thread driven, then reveal the reserved action stack only after the mark is complete.",
+      "Do treat every route beyond the welcome screen as undesigned until its interface is actually built and reviewed."
+    ],
+    "donts": [
+      "Don't re-typeset or redraw the Saan Tayo? mark; animated masks must reveal the exact source asset and resolve to the complete original image.",
+      "Don't expose, focus, or enable the actions before the mark has completed; keep their layout space reserved while hidden.",
+      "Don't infer card, input, navigation, list, map, or content-screen patterns from this single welcome surface.",
+      "Don't spread the doodle field across every future route by default; it is currently established only for the welcome atmosphere.",
+      "Don't add shadows, gradients, glass effects, or extra accent colors to make the current world feel more dimensional."
+    ]
+  }
+}

@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "saantayo",
+    "backgroundColor": "#080B0C",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -13,6 +14,11 @@
     "android": {
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#080B0C",
+      "barStyle": "light-content",
+      "translucent": true
     },
     "web": {
       "output": "static"
