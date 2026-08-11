@@ -6,9 +6,9 @@
     "motionMeta": {
       "welcome-brand-entry": {
         "displayName": "Welcome Brand Entry",
-        "duration": "2320ms from route focus until brand completion, then 240ms action reveal",
+        "duration": "3270ms from route focus until brand completion, then 240ms action reveal",
         "reducedMotion": "180ms opacity-only fade",
-        "sequence": "After a 200ms focus delay, the original brush lettering writes on through SVG masks, the GPS pin settles and signals, the question mark writes itself, the complete source mark replaces the animated layers, and only then do the actions reveal."
+        "sequence": "After a 200ms focus delay, S, a, a, n, T, a, and y write in seven independently clipped and gated phases, the GPS pin and a lower-left diagonal yellow tail settle as one connected mark, two scan rings expand and one lock ring contracts, the separately gated question mark writes itself only after acquisition ends, the final composed mark replaces the animated layers, and only then do the actions reveal."
       }
     },
     "colorMeta": {

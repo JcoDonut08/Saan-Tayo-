@@ -19,7 +19,7 @@ rounded:
   action-capsule: "999px"
 motion:
   welcome-brand-entry:
-    duration: "2320ms from route focus until brand completion, then 240ms action reveal"
+    duration: "3270ms from route focus until brand completion, then 240ms action reveal"
     reducedMotion: "180ms opacity-only fade"
 spacing:
   action-unit: "14px"
@@ -122,10 +122,10 @@ Both welcome actions use one continuous capsule silhouette (`rounded.action-caps
 ### Welcome Brand Field
 
 - **Pattern:** `splash-pattern.png` is a 941×1672 portrait raster cropped to cover the viewport beneath an 8% black scrim.
-- **Mark:** `saan-tayo-logo.png` is an 873×704 transparent raster. Animated SVG masks reveal pixels from that exact source; after the sequence, the complete original asset is restored as the final rendered mark.
-- **Motion:** After the route gains focus, a 200ms startup beat lets the native loading surface clear. The white lettering then writes on in natural brush-stroke order over 1150ms. At 1050ms the yellow pin settles into place, followed by two expanding GPS acquisition rings. At 1640ms the question mark begins a separate 420ms written reveal. At 2120ms after motion begins (2320ms after focus), the animated layers switch to the complete source image without a visible crossfade or dimming.
+- **Mark:** `saan-tayo-logo.png` is an 873×704 transparent raster whose exact lettering and punctuation are revealed through animated SVG masks. The yellow GPS pin, transparent center, connector, and lower-left tail are one code-native SVG silhouette, eliminating any compositing seam at the point. The final mark uses the same deterministic composition.
+- **Motion:** After the route gains focus, a 200ms startup beat lets the native loading surface clear. The white lettering writes on over 1500ms in seven non-overlapping phases: `S`, `a`, `a`, `n`, `T`, `a`, then `y`. Each letter resolves to the complete source pixels before the next layer can appear. At 1600ms the yellow pin and its connected tail settle into place. Two outward GPS scan rings begin at 1750ms and 1880ms, followed by a contracting lock ring from 2160–2520ms. Only after acquisition finishes does the separately gated question layer write itself from 2570–3010ms. At 3070ms after motion begins (3270ms after focus), the animated layers switch to the final composed mark without a visible crossfade or dimming.
 - **Focus behavior:** The sequence resets whenever the welcome route gains focus, so Expo Go reloads and navigation back to the route replay the authored entrance instead of preserving an already-completed frame.
-- **Performance:** The one-shot sequence uses Reanimated shared values. Lettering and punctuation use SVG stroke-dash masks, while the pin and signal rings stay on opacity and transforms; nothing loops or triggers layout animation.
+- **Performance:** The one-shot sequence uses Reanimated shared values. Each letter owns a clipped SVG stroke-dash mask and an outer native opacity gate, preventing Android round caps from exposing later letters; the question mark has the same independent gate. The pin and three signal beats stay on opacity and transforms; nothing loops or triggers layout animation.
 - **Reduced motion:** The device preference is read through `useReducedMotion`. When enabled, all translation, scale, rotation, springs, delays, and signal rings are skipped; the complete mark receives only a 180ms opacity fade before the actions become available.
 - **Accessibility:** The pattern is decorative and hidden from accessibility APIs; the mark exposes the label “Saan Tayo?”.
 

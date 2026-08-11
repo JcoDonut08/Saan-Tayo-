@@ -27,14 +27,15 @@ import Animated, {
   useReducedMotion,
   useSharedValue,
   withDelay,
+  withSequence,
   withSpring,
   withTiming,
   type SharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, {
+  ClipPath,
   Defs,
-  G,
   Image as SvgImage,
   Mask,
   Path,
@@ -44,8 +45,10 @@ import { colors } from '@/constants/colors';
 
 const LOGO_ASPECT_RATIO = 873 / 704;
 const LOGO_SOURCE = require('@/assets/images/saan-tayo-logo.png');
+const PIN_MARK_PATH =
+  'M 600 360 C 651 360 690 401 690 452 C 690 508 650 552 612 602 C 580 629 548 649 510 659 C 504 661 498 657 497 651 C 496 646 500 642 506 640 C 540 631 570 614 588 598 C 550 552 510 508 510 452 C 510 401 549 360 600 360 Z M 635 452 A 35 35 0 1 1 565 452 A 35 35 0 1 1 635 452 Z';
 const ENTRANCE_START_DELAY = 200;
-const BRAND_ANIMATION_DURATION = 2120;
+const BRAND_ANIMATION_DURATION = 3070;
 const ACTION_REVEAL_DURATION = 240;
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -95,15 +98,257 @@ function WritingStroke({
   );
 }
 
+type LetterCompletionFillProps = {
+  d: string;
+  end: number;
+  progress: SharedValue<number>;
+  start: number;
+};
+
+function LetterCompletionFill({
+  d,
+  end,
+  progress,
+  start,
+}: LetterCompletionFillProps) {
+  const fillStart = end - (end - start) * 0.18;
+  const animatedProps = useAnimatedProps(() => ({
+    opacity: interpolate(progress.value, [fillStart, end], [0, 1], 'clamp'),
+  }));
+
+  return (
+    <AnimatedPath
+      animatedProps={animatedProps}
+      d={d}
+      fill="white"
+    />
+  );
+}
+
+type LetterStrokeSpec = {
+  d: string;
+  end: number;
+  length: number;
+  start: number;
+  strokeWidth: number;
+};
+
+type LetterWritingLayerProps = {
+  clipPathD: string;
+  end: number;
+  id: string;
+  progress: SharedValue<number>;
+  start: number;
+  strokes: LetterStrokeSpec[];
+};
+
+function LetterWritingLayer({
+  clipPathD,
+  end,
+  id,
+  progress,
+  start,
+  strokes,
+}: LetterWritingLayerProps) {
+  const gateStyle = useAnimatedStyle(() => ({
+    opacity: progress.value > start ? 1 : 0,
+  }));
+  const clipId = `${id}-clip`;
+  const maskId = `${id}-mask`;
+
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[StyleSheet.absoluteFill, gateStyle]}
+    >
+      <Svg
+        height="100%"
+        preserveAspectRatio="none"
+        viewBox="0 0 873 704"
+        width="100%"
+      >
+        <Defs>
+          <ClipPath id={clipId}>
+            <Path d={clipPathD} />
+          </ClipPath>
+          <Mask
+            height={704}
+            id={maskId}
+            maskContentUnits="userSpaceOnUse"
+            maskType="alpha"
+            maskUnits="userSpaceOnUse"
+            width={873}
+            x={0}
+            y={0}
+          >
+            {strokes.map((stroke, index) => (
+              <WritingStroke
+                d={stroke.d}
+                end={start + (end - start) * stroke.end}
+                key={`${id}-stroke-${index}`}
+                length={stroke.length}
+                progress={progress}
+                start={start + (end - start) * stroke.start}
+                strokeWidth={stroke.strokeWidth}
+              />
+            ))}
+            <LetterCompletionFill
+              d={clipPathD}
+              end={end}
+              progress={progress}
+              start={start}
+            />
+          </Mask>
+        </Defs>
+
+        <SvgImage
+          clipPath={`url(#${clipId})`}
+          height={704}
+          href={LOGO_SOURCE}
+          mask={`url(#${maskId})`}
+          preserveAspectRatio="none"
+          width={873}
+        />
+      </Svg>
+    </Animated.View>
+  );
+}
+
 type WritingLogoLayerProps = {
-  questionProgress: SharedValue<number>;
   wordProgress: SharedValue<number>;
 };
 
-function WritingLogoLayer({
+function WritingLogoLayer({ wordProgress }: WritingLogoLayerProps) {
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <LetterWritingLayer
+        clipPathD="M 0 0 H 230 V 320 H 170 L 110 360 H 0 Z"
+        end={0.18}
+        id="letter-s"
+        progress={wordProgress}
+        start={0}
+        strokes={[
+          {
+            d: 'M 190 76 C 122 43 61 100 75 167 C 86 218 209 208 210 268 C 210 324 119 348 69 315',
+            end: 1,
+            length: 560,
+            start: 0,
+            strokeWidth: 98,
+          },
+        ]}
+      />
+      <LetterWritingLayer
+        clipPathD="M 218 100 H 370 V 335 H 218 Z"
+        end={0.31}
+        id="letter-a-one"
+        progress={wordProgress}
+        start={0.18}
+        strokes={[
+          {
+            d: 'M 318 170 C 262 153 226 213 239 267 C 250 313 310 281 332 219 C 337 204 334 249 353 286',
+            end: 1,
+            length: 390,
+            start: 0,
+            strokeWidth: 86,
+          },
+        ]}
+      />
+      <LetterWritingLayer
+        clipPathD="M 370 100 H 515 V 335 H 370 Z"
+        end={0.44}
+        id="letter-a-two"
+        progress={wordProgress}
+        start={0.31}
+        strokes={[
+          {
+            d: 'M 462 158 C 410 145 377 205 390 259 C 401 304 461 273 483 211 C 489 194 486 237 505 272',
+            end: 1,
+            length: 390,
+            start: 0,
+            strokeWidth: 84,
+          },
+        ]}
+      />
+      <LetterWritingLayer
+        clipPathD="M 515 90 H 672 V 335 H 515 Z"
+        end={0.6}
+        id="letter-n"
+        progress={wordProgress}
+        start={0.44}
+        strokes={[
+          {
+            d: 'M 517 267 C 531 213 538 169 557 151 C 574 135 558 245 569 276 C 584 226 603 157 632 140 C 661 123 640 225 647 270',
+            end: 1,
+            length: 470,
+            start: 0,
+            strokeWidth: 96,
+          },
+        ]}
+      />
+      <LetterWritingLayer
+        clipPathD="M 0 330 H 300 V 425 H 205 V 704 H 0 Z"
+        end={0.76}
+        id="letter-t"
+        progress={wordProgress}
+        start={0.6}
+        strokes={[
+          {
+            d: 'M 82 410 C 143 399 211 376 276 365',
+            end: 0.46,
+            length: 230,
+            start: 0,
+            strokeWidth: 90,
+          },
+          {
+            d: 'M 183 382 C 174 462 164 554 159 622',
+            end: 1,
+            length: 250,
+            start: 0.46,
+            strokeWidth: 82,
+          },
+        ]}
+      />
+      <LetterWritingLayer
+        clipPathD="M 205 425 H 363.5 V 615 H 205 Z"
+        end={0.88}
+        id="letter-a-three"
+        progress={wordProgress}
+        start={0.76}
+        strokes={[
+          {
+            d: 'M 315 449 C 260 430 224 489 236 546 C 247 596 310 559 333 494 C 339 476 335 536 353 565',
+            end: 1,
+            length: 415,
+            start: 0,
+            strokeWidth: 86,
+          },
+        ]}
+      />
+      <LetterWritingLayer
+        clipPathD="M 363 390 H 512 V 704 H 363 Z"
+        end={1}
+        id="letter-y"
+        progress={wordProgress}
+        start={0.88}
+        strokes={[
+          {
+            d: 'M 387 443 C 376 494 374 551 395 570 C 424 585 462 506 483 443 C 469 514 455 596 412 641',
+            end: 1,
+            length: 500,
+            start: 0,
+            strokeWidth: 86,
+          },
+        ]}
+      />
+    </View>
+  );
+}
+
+function QuestionLogoLayer({
   questionProgress,
-  wordProgress,
-}: WritingLogoLayerProps) {
+}: {
+  questionProgress: SharedValue<number>;
+}) {
   return (
     <Svg
       height="100%"
@@ -113,85 +358,6 @@ function WritingLogoLayer({
       width="100%"
     >
       <Defs>
-        <Mask
-          height={704}
-          id="word-writing-mask"
-          maskContentUnits="userSpaceOnUse"
-          maskType="alpha"
-          maskUnits="userSpaceOnUse"
-          width={873}
-          x={0}
-          y={0}
-        >
-          <G>
-            <WritingStroke
-              d="M 190 76 C 122 43 61 100 75 167 C 86 218 209 208 210 268 C 210 324 119 348 69 315"
-              end={0.2}
-              length={560}
-              progress={wordProgress}
-              start={0}
-              strokeWidth={98}
-            />
-            <WritingStroke
-              d="M 318 170 C 262 153 226 213 239 267 C 250 313 310 281 332 219 C 337 204 334 249 353 286"
-              end={0.34}
-              length={390}
-              progress={wordProgress}
-              start={0.15}
-              strokeWidth={86}
-            />
-            <WritingStroke
-              d="M 462 158 C 410 145 377 205 390 259 C 401 304 461 273 483 211 C 489 194 486 237 505 272"
-              end={0.46}
-              length={390}
-              progress={wordProgress}
-              start={0.28}
-              strokeWidth={84}
-            />
-            <WritingStroke
-              d="M 522 263 C 532 213 538 169 557 151 C 574 135 558 245 569 276 C 584 226 602 158 631 140 C 654 126 632 225 638 263"
-              end={0.58}
-              length={445}
-              progress={wordProgress}
-              start={0.4}
-              strokeWidth={88}
-            />
-
-            <WritingStroke
-              d="M 82 410 C 143 399 211 376 276 365"
-              end={0.62}
-              length={230}
-              progress={wordProgress}
-              start={0.5}
-              strokeWidth={90}
-            />
-            <WritingStroke
-              d="M 183 382 C 174 462 164 554 159 622"
-              end={0.7}
-              length={250}
-              progress={wordProgress}
-              start={0.57}
-              strokeWidth={82}
-            />
-            <WritingStroke
-              d="M 315 449 C 260 430 224 489 236 546 C 247 596 310 559 333 494 C 339 476 335 536 353 565"
-              end={0.84}
-              length={415}
-              progress={wordProgress}
-              start={0.65}
-              strokeWidth={86}
-            />
-            <WritingStroke
-              d="M 387 443 C 376 494 374 551 395 570 C 424 585 462 506 483 443 C 469 514 455 596 412 641"
-              end={1}
-              length={500}
-              progress={wordProgress}
-              start={0.78}
-              strokeWidth={86}
-            />
-          </G>
-        </Mask>
-
         <Mask
           height={704}
           id="question-writing-mask"
@@ -224,14 +390,66 @@ function WritingLogoLayer({
       <SvgImage
         height={704}
         href={LOGO_SOURCE}
-        mask="url(#word-writing-mask)"
+        mask="url(#question-writing-mask)"
         preserveAspectRatio="none"
         width={873}
       />
+    </Svg>
+  );
+}
+
+function PinLogoLayer() {
+  return (
+    <Svg
+      height="100%"
+      pointerEvents="none"
+      preserveAspectRatio="none"
+      viewBox="489 338 192 338"
+      width="100%"
+    >
+      <Path
+        d={PIN_MARK_PATH}
+        fill={colors.splashAccent}
+        fillRule="evenodd"
+      />
+    </Svg>
+  );
+}
+
+function FinalLogoLayer() {
+  return (
+    <Svg
+      height="100%"
+      pointerEvents="none"
+      preserveAspectRatio="none"
+      viewBox="0 0 873 704"
+      width="100%"
+    >
+      <Defs>
+        <ClipPath id="final-word-clip">
+          <Path d="M 0 0 H 672 V 332 H 503 V 704 H 0 Z" />
+        </ClipPath>
+        <ClipPath id="final-question-clip">
+          <Path d="M 680 280 H 873 V 610 H 680 Z" />
+        </ClipPath>
+      </Defs>
+
       <SvgImage
+        clipPath="url(#final-word-clip)"
         height={704}
         href={LOGO_SOURCE}
-        mask="url(#question-writing-mask)"
+        preserveAspectRatio="none"
+        width={873}
+      />
+      <Path
+        d={PIN_MARK_PATH}
+        fill={colors.splashAccent}
+        fillRule="evenodd"
+      />
+      <SvgImage
+        clipPath="url(#final-question-clip)"
+        height={704}
+        href={LOGO_SOURCE}
         preserveAspectRatio="none"
         width={873}
       />
@@ -253,6 +471,7 @@ function AnimatedBrandMark({ onReadyChange }: AnimatedBrandMarkProps) {
   const pinY = useSharedValue(-10);
   const firstSignal = useSharedValue(0);
   const secondSignal = useSharedValue(0);
+  const lockSignal = useSharedValue(0);
   const questionProgress = useSharedValue(0);
 
   useFocusEffect(
@@ -266,6 +485,7 @@ function AnimatedBrandMark({ onReadyChange }: AnimatedBrandMarkProps) {
         pinY,
         firstSignal,
         secondSignal,
+        lockSignal,
         questionProgress,
       ];
 
@@ -278,6 +498,7 @@ function AnimatedBrandMark({ onReadyChange }: AnimatedBrandMarkProps) {
       pinY.value = -10;
       firstSignal.value = 0;
       secondSignal.value = 0;
+      lockSignal.value = 0;
       questionProgress.value = 0;
       onReadyChange(false);
 
@@ -297,27 +518,37 @@ function AnimatedBrandMark({ onReadyChange }: AnimatedBrandMarkProps) {
         }
 
         wordProgress.value = withTiming(1, {
-          duration: 1150,
+          duration: 1500,
           easing: Easing.inOut(Easing.cubic),
         });
 
         pinOpacity.value = withDelay(
-          1050,
+          1600,
           withTiming(1, {
             duration: 140,
             easing: Easing.out(Easing.cubic),
           }),
         );
         pinScale.value = withDelay(
-          1050,
-          withSpring(1, {
-            damping: 11,
-            mass: 0.62,
-            stiffness: 230,
-          }),
+          1600,
+          withSequence(
+            withSpring(1, {
+              damping: 12,
+              mass: 0.62,
+              stiffness: 225,
+            }),
+            withTiming(1.055, {
+              duration: 110,
+              easing: Easing.out(Easing.cubic),
+            }),
+            withTiming(1, {
+              duration: 150,
+              easing: Easing.out(Easing.cubic),
+            }),
+          ),
         );
         pinY.value = withDelay(
-          1050,
+          1600,
           withSpring(0, {
             damping: 12,
             mass: 0.62,
@@ -326,24 +557,32 @@ function AnimatedBrandMark({ onReadyChange }: AnimatedBrandMarkProps) {
         );
 
         firstSignal.value = withDelay(
-          1160,
+          1750,
           withTiming(1, {
             duration: 520,
             easing: Easing.out(Easing.exp),
           }),
         );
         secondSignal.value = withDelay(
-          1280,
+          1880,
           withTiming(1, {
             duration: 560,
             easing: Easing.out(Easing.exp),
           }),
         );
 
-        questionProgress.value = withDelay(
-          1640,
+        lockSignal.value = withDelay(
+          2160,
           withTiming(1, {
-            duration: 420,
+            duration: 360,
+            easing: Easing.out(Easing.cubic),
+          }),
+        );
+
+        questionProgress.value = withDelay(
+          2570,
+          withTiming(1, {
+            duration: 440,
             easing: Easing.inOut(Easing.cubic),
           }),
         );
@@ -376,6 +615,7 @@ function AnimatedBrandMark({ onReadyChange }: AnimatedBrandMarkProps) {
       baseOpacity,
       firstSignal,
       layersOpacity,
+      lockSignal,
       onReadyChange,
       pinOpacity,
       pinScale,
@@ -395,31 +635,58 @@ function AnimatedBrandMark({ onReadyChange }: AnimatedBrandMarkProps) {
   }));
   const pinStyle = useAnimatedStyle(() => ({
     opacity: pinOpacity.value,
-    transform: [{ translateY: pinY.value }, { scale: pinScale.value }],
+    transform: [
+      { translateY: pinY.value },
+      {
+        scale:
+          pinScale.value *
+          interpolate(lockSignal.value, [0, 0.48, 1], [1, 1.07, 1]),
+      },
+    ],
   }));
   const firstSignalStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
       firstSignal.value,
-      [0, 0.08, 0.72, 1],
-      [0, 0.72, 0.24, 0],
+      [0, 0.08, 0.65, 1],
+      [0, 0.9, 0.34, 0],
     ),
     transform: [
       {
-        scale: interpolate(firstSignal.value, [0, 1], [0.42, 2.15]),
+        scale: interpolate(firstSignal.value, [0, 1], [1.7, 3]),
       },
     ],
   }));
   const secondSignalStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
       secondSignal.value,
-      [0, 0.08, 0.72, 1],
-      [0, 0.58, 0.18, 0],
+      [0, 0.08, 0.65, 1],
+      [0, 0.72, 0.26, 0],
     ),
     transform: [
       {
-        scale: interpolate(secondSignal.value, [0, 1], [0.42, 2.7]),
+        scale: interpolate(secondSignal.value, [0, 1], [1.7, 3.7]),
       },
     ],
+  }));
+  const lockSignalStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      lockSignal.value,
+      [0, 0.12, 0.72, 1],
+      [0, 0.88, 0.5, 0],
+    ),
+    transform: [
+      {
+        scale: interpolate(lockSignal.value, [0, 1], [2.9, 1.55]),
+      },
+    ],
+  }));
+  const questionLayerStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      questionProgress.value,
+      [0, 0.025],
+      [0, 1],
+      'clamp',
+    ),
   }));
   return (
     <View
@@ -432,34 +699,19 @@ function AnimatedBrandMark({ onReadyChange }: AnimatedBrandMarkProps) {
         pointerEvents="none"
         style={[StyleSheet.absoluteFill, baseStyle]}
       >
-        <Image
-          accessible={false}
-          contentFit="fill"
-          importantForAccessibility="no"
-          source={LOGO_SOURCE}
-          style={StyleSheet.absoluteFill}
-          transition={0}
-        />
+        <FinalLogoLayer />
       </Animated.View>
 
       <Animated.View
         pointerEvents="none"
         style={[StyleSheet.absoluteFill, layersStyle]}
       >
-        <WritingLogoLayer
-          questionProgress={questionProgress}
-          wordProgress={wordProgress}
-        />
-
-        <Animated.View style={[styles.pinCrop, pinStyle]}>
-          <Image
-            accessible={false}
-            contentFit="fill"
-            importantForAccessibility="no"
-            source={LOGO_SOURCE}
-            style={styles.pinImage}
-            transition={0}
-          />
+        <WritingLogoLayer wordProgress={wordProgress} />
+        <Animated.View
+          pointerEvents="none"
+          style={[StyleSheet.absoluteFill, questionLayerStyle]}
+        >
+          <QuestionLogoLayer questionProgress={questionProgress} />
         </Animated.View>
 
         <Animated.View
@@ -472,7 +724,15 @@ function AnimatedBrandMark({ onReadyChange }: AnimatedBrandMarkProps) {
           importantForAccessibility="no"
           style={[styles.signalRing, secondSignalStyle]}
         />
+        <Animated.View
+          accessible={false}
+          importantForAccessibility="no"
+          style={[styles.signalRing, lockSignalStyle]}
+        />
 
+        <Animated.View style={[styles.pinCrop, pinStyle]}>
+          <PinLogoLayer />
+        </Animated.View>
       </Animated.View>
     </View>
   );
@@ -644,20 +904,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'absolute',
     top: '48%',
-    width: '23%',
-  },
-  pinImage: {
-    height: '208.33%',
-    left: '-243.48%',
-    position: 'absolute',
-    top: '-100%',
-    width: '434.78%',
+    width: '22%',
   },
   signalRing: {
     aspectRatio: 1,
     borderColor: colors.splashAccent,
     borderRadius: 999,
-    borderWidth: 1.5,
+    borderWidth: 2,
     left: '63.1%',
     position: 'absolute',
     top: '56.3%',
