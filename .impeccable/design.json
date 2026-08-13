@@ -1,9 +1,15 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-10T10:20:52Z",
+  "generatedAt": "2026-08-11T09:10:00Z",
   "title": "Design System: Saan Tayo?",
   "extensions": {
     "motionMeta": {
+      "onboarding-page-settle": {
+        "displayName": "Onboarding Page Settle",
+        "duration": "240ms",
+        "reducedMotion": "Content remains fully visible with no translation or scale",
+        "sequence": "A native horizontal page transition moves one circular yellow progress marker continuously between four gray slots while the active illustration and copy settle with a small bounded opacity, vertical, and scale adjustment."
+      },
       "welcome-brand-entry": {
         "displayName": "Welcome Brand Entry",
         "duration": "3270ms from route focus until brand completion, then 240ms action reveal",
@@ -138,11 +144,12 @@
   ],
   "narrative": {
     "northStar": "The Barkada Night Map",
-    "overview": "The established Saan Tayo? world is a portrait welcome surface: a near-black illustrated field, warm white hand-lettering, and a single location-yellow accent turn the familiar barkada question into an immediate invitation. It feels friendly and local without presenting unverified venues, maps, or product claims.\n\nThe world is intentionally narrow. Only the welcome surface is visually implemented; onboarding, discovery, saved places, groups, profile, results, place details, and rooms remain empty route scaffolds. Future work may extend these visual ingredients deliberately, but this document does not imply that navigation, cards, inputs, lists, or content screens already have an established design.",
+    "overview": "The established Saan Tayo? world now covers a portrait welcome surface and a four-page Get Started onboarding story. A near-black field, warm white lettering, one polished illustrated barkada character, and one location-yellow accent turn indecision into a confident place-finding invitation. Discovery and the remaining content routes are still empty scaffolds; this document does not imply that their navigation, cards, inputs, lists, or content patterns are established.",
     "keyCharacteristics": [
       "Near-black, edge-to-edge atmosphere with a faint food-and-hangout doodle field.",
       "Warm white raster lettering with an integrated yellow location-pin accent.",
       "One authored opening beat: the original brush lettering writes on, the pin acquires location, and the question mark writes itself last.",
+      "One polished 3D cartoon barkada character carries onboarding from confusion to an idea, readiness, and a Saan Tayo? solution.",
       "One filled yellow action and one quiet outlined action, both full-width capsules.",
       "Safe-area-aware, scroll-safe portrait composition that remains usable at larger text sizes."
     ],
@@ -164,7 +171,7 @@
       },
       {
         "name": "The Flat Night Rule",
-        "body": "Keep this world shadowless; separate action from atmosphere with contrast, outline, and state color rather than floating surfaces.",
+        "body": "Keep native UI chrome flat; illustration depth, warm rim light, and soft character shading stay contained inside the story artwork.",
         "section": "elevation"
       }
     ],
@@ -173,14 +180,17 @@
       "Do keep yellow rare and functional: the integrated pin, primary action, secondary outline, and their pressed states.",
       "Do preserve safe-area clearance, scroll fallback, and at least the shipped 52-pixel action height.",
       "Do keep the writing-to-GPS-to-question sequence one-shot and UI-thread driven, then reveal the reserved action stack only after the mark is complete.",
-      "Do treat every route beyond the welcome screen as undesigned until its interface is actually built and reviewed."
+      "Do keep one recognizable main character and the confused to idea to ready to solved progression when replacing onboarding art.",
+      "Do treat every route beyond onboarding as undesigned until its interface is actually built and reviewed."
     ],
     "donts": [
       "Don't re-typeset or redraw the Saan Tayo? mark; animated masks must reveal the exact source asset and resolve to the complete original image.",
       "Don't expose, focus, or enable the actions before the mark has completed; keep their layout space reserved while hidden.",
+      "Don't add a fifth onboarding page, hide Skip, loop decorative motion, or introduce an external carousel dependency.",
+      "Don't replace the onboarding art with unrelated characters or a green competitor-inspired mascot.",
       "Don't infer card, input, navigation, list, map, or content-screen patterns from this single welcome surface.",
-      "Don't spread the doodle field across every future route by default; it is currently established only for the welcome atmosphere.",
-      "Don't add shadows, gradients, glass effects, or extra accent colors to make the current world feel more dimensional."
+      "Don't spread the doodle field across every future route by default; it is currently established only for the welcome and onboarding atmosphere.",
+      "Don't add shadows, gradients, glass effects, or extra accent colors to native UI surfaces; the illustration assets own the dimensional treatment."
     ]
   }
 }

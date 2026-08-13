@@ -51,6 +51,8 @@ const ENTRANCE_START_DELAY = 200;
 const BRAND_ANIMATION_DURATION = 3070;
 const ACTION_REVEAL_DURATION = 240;
 
+let hasPlayedWelcomeEntrance = false;
+
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 type WritingStrokeProps = {
@@ -490,6 +492,23 @@ function AnimatedBrandMark({ onReadyChange }: AnimatedBrandMarkProps) {
       ];
 
       animatedValues.forEach(cancelAnimation);
+
+      if (hasPlayedWelcomeEntrance) {
+        baseOpacity.value = 1;
+        layersOpacity.value = 0;
+        wordProgress.value = 1;
+        pinOpacity.value = 1;
+        pinScale.value = 1;
+        pinY.value = 0;
+        firstSignal.value = 1;
+        secondSignal.value = 1;
+        lockSignal.value = 1;
+        questionProgress.value = 1;
+        onReadyChange(true);
+
+        return () => animatedValues.forEach(cancelAnimation);
+      }
+
       baseOpacity.value = 0;
       layersOpacity.value = reduceMotion ? 0 : 1;
       wordProgress.value = 0;
@@ -503,6 +522,8 @@ function AnimatedBrandMark({ onReadyChange }: AnimatedBrandMarkProps) {
       onReadyChange(false);
 
       const startTimer = setTimeout(() => {
+        hasPlayedWelcomeEntrance = true;
+
         if (reduceMotion) {
           baseOpacity.value = withTiming(
             1,
