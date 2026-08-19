@@ -1,26 +1,30 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
+import { SmoothPressable } from '@/components/motion/smooth-pressable';
 import { colors } from '@/constants/colors';
 
 type OnboardingButtonProps = {
+  disabled?: boolean;
   label: string;
   onPress: () => void;
 };
 
 export function OnboardingButton({
+  disabled = false,
   label,
   onPress,
 }: OnboardingButtonProps) {
   return (
-    <Pressable
+    <SmoothPressable
       accessibilityHint={
         label === "Let's Go"
-          ? 'Finishes onboarding and opens Discover'
+          ? 'Finishes the introduction and opens Discover'
           : 'Moves to the next onboarding page'
       }
       accessibilityLabel={label}
       accessibilityRole="button"
       android_ripple={{ color: colors.splashAccentPressed }}
+      disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
@@ -28,7 +32,7 @@ export function OnboardingButton({
       ]}
     >
       <Text style={styles.label}>{label}</Text>
-    </Pressable>
+    </SmoothPressable>
   );
 }
 
@@ -45,7 +49,6 @@ const styles = StyleSheet.create({
   },
   buttonPressed: {
     backgroundColor: colors.splashAccentPressed,
-    transform: [{ scale: 0.985 }],
   },
   label: {
     color: colors.splashOnAccent,

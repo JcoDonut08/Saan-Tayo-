@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
-import { ArrowLeft } from 'lucide-react-native';
+import { useNavigation, useRouter } from 'expo-router';
 import {
   FlatList,
   Pressable,
@@ -20,6 +18,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BrandBackdrop } from '@/components/brand/brand-backdrop';
+import { AppBackButton } from '@/components/navigation/app-back-button';
 import { OnboardingButton } from '@/components/onboarding/onboarding-button';
 import { OnboardingSlide } from '@/components/onboarding/onboarding-slide';
 import { PaginationDots } from '@/components/onboarding/pagination-dots';
@@ -28,13 +28,21 @@ import {
   onboardingSlides,
   type OnboardingSlideData,
 } from '@/constants/onboarding';
+import { useAppStore } from '@/stores/app-store';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(
   FlatList<OnboardingSlideData>,
 );
 
 export default function OnboardingScreen() {
+  const navigation = useNavigation();
   const router = useRouter();
+  const cancelPendingEntry = useAppStore(
+    (state) => state.cancelPendingEntry,
+  );
+  const completeIntroduction = useAppStore(
+    (state) => state.completeIntroduction,
+  );
   const { height, width: windowWidth } = useWindowDimensions();
   const listRef = useRef<FlatList<OnboardingSlideData>>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -50,17 +58,27 @@ export default function OnboardingScreen() {
   );
 
   const finishOnboarding = useCallback(() => {
+    completeIntroduction();
     router.replace('/discover');
-  }, [router]);
+  }, [completeIntroduction, router]);
 
   const handleBack = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-
+    cancelPendingEntry();
     router.replace('/');
-  }, [router]);
+  }, [cancelPendingEntry, router]);
+
+  useEffect(
+    () =>
+      navigation.addListener('beforeRemove', (event) => {
+        const entryState = useAppStore.getState();
+        if (entryState.introStatus !== 'pending') return;
+
+        event.preventDefault();
+        entryState.cancelPendingEntry();
+        router.replace('/');
+      }),
+    [navigation, router],
+  );
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -136,38 +154,16 @@ export default function OnboardingScreen() {
         translucent
       />
 
-      <Image
-        accessible={false}
-        contentFit="cover"
-        importantForAccessibility="no"
-        pointerEvents="none"
-        source={require('@/assets/images/splash-pattern.png')}
-        style={styles.backgroundPattern}
-        transition={0}
-      />
-      <View pointerEvents="none" style={styles.backgroundScrim} />
+      <BrandBackdrop />
 
       <View style={styles.topBar}>
-        <Pressable
+        <AppBackButton
           accessibilityHint="Returns to the welcome screen"
-          accessibilityLabel="Go back"
-          accessibilityRole="button"
-          hitSlop={8}
           onPress={handleBack}
-          style={({ pressed }) => [
-            styles.backButton,
-            pressed && styles.topButtonPressed,
-          ]}
-        >
-          <ArrowLeft
-            color={colors.onboardingForeground}
-            size={24}
-            strokeWidth={2.4}
-          />
-        </Pressable>
+        />
         <Pressable
-          accessibilityHint="Skips onboarding and opens Discover"
-          accessibilityLabel="Skip onboarding"
+          accessibilityHint="Skips the introduction and opens Discover"
+          accessibilityLabel="Skip introduction"
           accessibilityRole="button"
           hitSlop={8}
           onPress={finishOnboarding}
@@ -234,22 +230,6 @@ export default function OnboardingScreen() {
 }
 
 const styles = StyleSheet.create({
-  backButton: {
-    alignItems: 'center',
-    borderRadius: 999,
-    justifyContent: 'center',
-    minHeight: 48,
-    minWidth: 48,
-  },
-  backgroundPattern: {
-    ...StyleSheet.absoluteFillObject,
-    height: '100%',
-    width: '100%',
-  },
-  backgroundScrim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.08)',
-  },
   footer: {
     alignSelf: 'center',
     gap: 18,
@@ -285,7 +265,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     minHeight: 56,
-    paddingHorizontal: 18,
   },
   topButtonPressed: {
     backgroundColor: 'rgba(255, 255, 255, 0.07)',

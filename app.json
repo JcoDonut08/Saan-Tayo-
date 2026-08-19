@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "saantayo",
+    "icon": "./assets/images/saan-tayo-logo.png",
     "backgroundColor": "#080B0C",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -12,6 +13,10 @@
       "supportsTablet": true
     },
     "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/saan-tayo-logo.png",
+        "backgroundColor": "#080B0C"
+      },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
@@ -21,7 +26,13 @@
       "translucent": true
     },
     "web": {
+      "favicon": "./assets/images/saan-tayo-logo.png",
       "output": "static"
+    },
+    "splash": {
+      "image": "./assets/images/saan-tayo-logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#080B0C"
     },
     "plugins": ["expo-router"],
     "experiments": {

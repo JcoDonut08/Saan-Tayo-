@@ -2,7 +2,7 @@
 
 Saan Tayo? is a mobile-first Expo application for discovering Metro Manila hangout places based on budget, mood, location, group preferences, and travel limits.
 
-This repository currently contains only the initial project environment and folder structure. Application screens, recommendation logic, authentication, maps, backend services, Supabase, and sample place data have not been implemented.
+The current prototype includes branded entry and onboarding, validation-only authentication, browse-first discovery, dated source-linked Metro Manila venue data, deterministic Smart Match results, place details, and locally persisted saves. Real authentication, maps, backend services, Supabase, live availability, and AI-backed recommendations have not been implemented.
 
 ## Project folders
 

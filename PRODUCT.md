@@ -25,16 +25,16 @@ The core use case is a quick, phone-first decision made alone or with a group, o
 ## Capabilities and Constraints
 
 - Confirmed planned flows include discovery, saved places, groups, preferences, results, place details, and group rooms.
-- The repository currently contains only the initial Expo Router scaffold; recommendation logic, authentication, maps, backend services, and real place data are not implemented.
+- The repository includes a branded entry experience, a four-page introduction, validation-only authentication screens, persisted local guest/account entry state, and a browse-first discovery journey backed by nine dated, source-linked Metro Manila venue records. Smart Match is deterministic local ranking rather than AI. Real authentication, maps, backend services, live place data, and group coordination are not implemented.
 - The starter stack is React Native, Expo Router, TypeScript, Zustand, React Hook Form, Zod, Lucide React Native, and AsyncStorage.
 - Early development must remain usable through Expo Go and must not depend on paid services.
-- Assumption from the requested splash-screen controls: “Get Started” begins onboarding, while “Log In” may temporarily enter the scaffold until authentication is designed.
+- The native splash is a brief non-interactive loading surface. The branded entry screen offers “Continue as guest” and “Log In”; new guests and newly created accounts receive the optional introduction, while returning logins and remembered guests open Discover directly.
 
 ## Brand Commitments
 
 - Product name: **Saan Tayo?**
 - The splash-screen reference supplied by the user is binding for this first surface: near-black background, faint hangout/food doodles, a large white hand-lettered name with a yellow location-pin accent, and yellow/outlined bottom actions.
-- No standalone official logo file has been supplied; the screenshot is the only current brand reference.
+- The project-local `saan-tayo-logo.png` asset is the single current logo source for native launch, launcher, web, welcome, and authentication surfaces.
 
 ## Evidence on Hand
 
@@ -49,6 +49,7 @@ The core use case is a quick, phone-first decision made alone or with a group, o
 - Ground the experience in Metro Manila’s real hangout context.
 - Build a free, testable foundation before adding external services.
 - Preserve the friendly, conversational Filipino identity of the name and actions.
+- Let people browse without setup, then offer preference matching as a visible way out of indecision.
 
 ## Accessibility & Inclusion
 

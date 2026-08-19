@@ -7,10 +7,9 @@ FORM: Exact user-pinned splash reference; seed key reference-splash-2026-08-10.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
 */
 import { Image } from 'expo-image';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { Redirect, useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
-  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -41,10 +40,15 @@ import Svg, {
   Path,
 } from 'react-native-svg';
 
+import { BrandBackdrop } from '@/components/brand/brand-backdrop';
+import { SmoothPressable } from '@/components/motion/smooth-pressable';
+import {
+  SAAN_TAYO_LOGO,
+  SAAN_TAYO_LOGO_ASPECT_RATIO,
+} from '@/constants/branding';
 import { colors } from '@/constants/colors';
+import { useAppStore } from '@/stores/app-store';
 
-const LOGO_ASPECT_RATIO = 873 / 704;
-const LOGO_SOURCE = require('@/assets/images/saan-tayo-logo.png');
 const PIN_MARK_PATH =
   'M 600 360 C 651 360 690 401 690 452 C 690 508 650 552 612 602 C 580 629 548 649 510 659 C 504 661 498 657 497 651 C 496 646 500 642 506 640 C 540 631 570 614 588 598 C 550 552 510 508 510 452 C 510 401 549 360 600 360 Z M 635 452 A 35 35 0 1 1 565 452 A 35 35 0 1 1 635 452 Z';
 const ENTRANCE_START_DELAY = 200;
@@ -206,7 +210,7 @@ function LetterWritingLayer({
         <SvgImage
           clipPath={`url(#${clipId})`}
           height={704}
-          href={LOGO_SOURCE}
+          href={SAAN_TAYO_LOGO}
           mask={`url(#${maskId})`}
           preserveAspectRatio="none"
           width={873}
@@ -391,7 +395,7 @@ function QuestionLogoLayer({
 
       <SvgImage
         height={704}
-        href={LOGO_SOURCE}
+        href={SAAN_TAYO_LOGO}
         mask="url(#question-writing-mask)"
         preserveAspectRatio="none"
         width={873}
@@ -439,7 +443,7 @@ function FinalLogoLayer() {
       <SvgImage
         clipPath="url(#final-word-clip)"
         height={704}
-        href={LOGO_SOURCE}
+        href={SAAN_TAYO_LOGO}
         preserveAspectRatio="none"
         width={873}
       />
@@ -451,7 +455,7 @@ function FinalLogoLayer() {
       <SvgImage
         clipPath="url(#final-question-clip)"
         height={704}
-        href={LOGO_SOURCE}
+        href={SAAN_TAYO_LOGO}
         preserveAspectRatio="none"
         width={873}
       />
@@ -762,6 +766,12 @@ function AnimatedBrandMark({ onReadyChange }: AnimatedBrandMarkProps) {
 export default function WelcomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const accessMode = useAppStore((state) => state.accessMode);
+  const beginGuestIntroduction = useAppStore(
+    (state) => state.beginGuestIntroduction,
+  );
+  const hasHydrated = useAppStore((state) => state.hasHydrated);
+  const introStatus = useAppStore((state) => state.introStatus);
   const [actionsReady, setActionsReady] = useState(false);
   const actionsProgress = useSharedValue(0);
 
@@ -786,6 +796,32 @@ export default function WelcomeScreen() {
     ],
   }));
 
+  const handleContinueAsGuest = useCallback(() => {
+    beginGuestIntroduction();
+    router.push('/onboarding');
+  }, [beginGuestIntroduction, router]);
+
+  if (!hasHydrated) {
+    return (
+      <View style={styles.screen}>
+        <StatusBar
+          backgroundColor="transparent"
+          barStyle="light-content"
+          translucent
+        />
+        <BrandBackdrop />
+      </View>
+    );
+  }
+
+  if (accessMode !== 'none') {
+    return (
+      <Redirect
+        href={introStatus === 'pending' ? '/onboarding' : '/discover'}
+      />
+    );
+  }
+
   return (
     <View style={styles.screen}>
       <StatusBar
@@ -795,15 +831,7 @@ export default function WelcomeScreen() {
         translucent
       />
 
-      <Image
-        accessible={false}
-        contentFit="cover"
-        importantForAccessibility="no"
-        source={require('@/assets/images/splash-pattern.png')}
-        style={styles.backgroundPattern}
-        transition={0}
-      />
-      <View pointerEvents="none" style={styles.backgroundScrim} />
+      <BrandBackdrop />
 
       <ScrollView
         alwaysBounceVertical={false}
@@ -834,13 +862,13 @@ export default function WelcomeScreen() {
             pointerEvents={actionsReady ? 'auto' : 'none'}
             style={[styles.actions, actionsStyle]}
           >
-            <Pressable
-              accessibilityHint="Opens the onboarding flow"
-              accessibilityLabel="Get Started"
+            <SmoothPressable
+              accessibilityHint="Introduces the app before opening guest mode"
+              accessibilityLabel="Continue as guest"
               accessibilityRole="button"
               android_ripple={{ color: colors.splashAccentPressed }}
               disabled={!actionsReady}
-              onPress={() => router.push('/onboarding')}
+              onPress={handleContinueAsGuest}
               style={({ pressed }) => [
                 styles.button,
                 styles.primaryButton,
@@ -848,17 +876,22 @@ export default function WelcomeScreen() {
               ]}
             >
               <Text style={styles.primaryButtonText}>
-                Get Started
+                Continue as guest
               </Text>
-            </Pressable>
+            </SmoothPressable>
 
-            <Pressable
-              accessibilityHint="Continues to the current app"
+            <SmoothPressable
+              accessibilityHint="Opens the login screen"
               accessibilityLabel="Log In"
               accessibilityRole="button"
               android_ripple={{ color: 'rgba(255, 194, 28, 0.12)' }}
               disabled={!actionsReady}
-              onPress={() => router.push('/discover')}
+              onPress={() =>
+                router.push({
+                  pathname: '/auth/login',
+                  params: { entrance: 'brand' },
+                })
+              }
               style={({ pressed }) => [
                 styles.button,
                 styles.secondaryButton,
@@ -868,7 +901,7 @@ export default function WelcomeScreen() {
               <Text style={styles.secondaryButtonText}>
                 Log In
               </Text>
-            </Pressable>
+            </SmoothPressable>
           </Animated.View>
         </View>
       </ScrollView>
@@ -881,15 +914,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.splashBackground,
     overflow: 'hidden',
-  },
-  backgroundPattern: {
-    ...StyleSheet.absoluteFillObject,
-    height: '100%',
-    width: '100%',
-  },
-  backgroundScrim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.08)',
   },
   scrollView: {
     flex: 1,
@@ -904,7 +928,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'stretch',
     minHeight: 560,
-    width: '100%',
   },
   logoRegion: {
     flex: 1,
@@ -913,7 +936,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   logo: {
-    aspectRatio: LOGO_ASPECT_RATIO,
+    aspectRatio: SAAN_TAYO_LOGO_ASPECT_RATIO,
     maxWidth: 304,
     position: 'relative',
     transform: [{ translateY: -24 }],
